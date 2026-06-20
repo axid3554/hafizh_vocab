@@ -302,18 +302,20 @@
       data = data.filter((item) => item.jenis_kata === state.currentFilter);
     }
 
-    // Search
+    // Search (Arabic-aware: strips harakat before comparing)
     if (state.searchQuery) {
+      const normalizedQuery = normalizeArabic(state.searchQuery).toLowerCase();
       data = data.filter((item) => {
         const searchable = [
-          item.kata_arab,
+          normalizeArabic(item.kata_arab || ''),
+          normalizeArabic(item.contoh_ayat_ar || ''),
           item.transliterasi,
           item.arti,
           item.arti_en,
         ]
           .join(' ')
           .toLowerCase();
-        return searchable.includes(state.searchQuery);
+        return searchable.includes(normalizedQuery);
       });
     }
 
@@ -539,6 +541,33 @@
   }
 
   // ==================== UTILITIES ====================
+
+  /**
+   * Normalize Arabic text for search:
+   * - Strip harakat/diacritics (fathah, kasrah, dammah, shadda, sukun, tanwin, etc.)
+   * - Normalize alef variants (ٱ أ إ آ → ا)
+   * - Normalize taa marbuta (ة → ه)
+   * - Normalize alef maqsura (ى → ي)
+   */
+  function normalizeArabic(text) {
+    return text
+      // Remove Arabic diacritical marks (harakat): U+064B to U+065F, U+0670
+      .replace(/[\u064B-\u065F\u0670]/g, '')
+      // Remove tatweel (kashida)
+      .replace(/\u0640/g, '')
+      // Remove Quranic annotation signs (small high/low letters, etc.)
+      .replace(/[\u06D6-\u06ED]/g, '')
+      // Remove zero-width characters
+      .replace(/[\u200B-\u200F\u202A-\u202E\uFEFF]/g, '')
+      // Normalize alef variants to plain alef
+      .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627') // آ أ إ ٱ → ا
+      // Normalize taa marbuta to haa
+      .replace(/\u0629/g, '\u0647') // ة → ه
+      // Normalize alef maqsura to yaa
+      .replace(/\u0649/g, '\u064A') // ى → ي
+      .trim();
+  }
+
   function shuffleArray(arr) {
     const shuffled = [...arr];
     for (let i = shuffled.length - 1; i > 0; i--) {
