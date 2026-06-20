@@ -23,9 +23,8 @@
     // Touch
     touchStartX: 0,
     touchEndX: 0,
+    quizTotal: 25,
   };
-
-  const QUIZ_TOTAL = 25;
 
   // ==================== DOM ELEMENTS ====================
   const $ = (id) => document.getElementById(id);
@@ -42,8 +41,8 @@
     flashcardSection: $('flashcardSection'),
     flashcard: $('flashcard'),
     cardContainer: $('cardContainer'),
+    cardLoader: $('cardLoader'),
     cardArab: $('cardArab'),
-    cardBadgeFront: $('cardBadgeFront'),
     cardBadgeBack: $('cardBadgeBack'),
     cardTransliterasi: $('cardTransliterasi'),
     cardArti: $('cardArti'),
@@ -64,6 +63,8 @@
     // Quiz
     quizSection: $('quizSection'),
     quizStart: $('quizStart'),
+    quizQuestionCountOptions: document.querySelectorAll('.quiz-settings__btn'),
+    quizStartCountText: $('quizStartCountText'),
     quizPlay: $('quizPlay'),
     quizResult: $('quizResult'),
     startQuizBtn: $('startQuizBtn'),
@@ -191,11 +192,87 @@
   }
 
   // ==================== FLASHCARD ====================
+  let rotateOutTimeout;
+  let rotateInTimeout;
+  let cleanupTimeout;
+
+  function updateCardWithLoader(actionFn, direction = 'next') {
+    if (actionFn) actionFn();
+
+    clearTimeout(rotateOutTimeout);
+    clearTimeout(rotateInTimeout);
+    clearTimeout(cleanupTimeout);
+
+    dom.cardLoader.classList.add('card-loader--active');
+
+    if (direction === 'none') {
+      dom.cardLoader.classList.add('card-loader--solid');
+
+      rotateOutTimeout = setTimeout(() => {
+        dom.flashcard.style.transition = 'none';
+        renderCard();
+        void dom.flashcard.offsetWidth;
+        dom.flashcard.style.transition = '';
+
+        rotateInTimeout = setTimeout(() => {
+          dom.cardLoader.classList.remove('card-loader--active');
+          cleanupTimeout = setTimeout(() => {
+            dom.cardLoader.classList.remove('card-loader--solid');
+          }, 200); // Wait for fade out
+        }, 150);
+      }, 200);
+      return;
+    }
+
+    // For rotate animations, ensure solid class is removed
+    dom.cardLoader.classList.remove('card-loader--solid');
+
+    // Determine angles based on direction and flipped state
+    const currentAngle = state.isFlipped ? 180 : 0;
+    let outAngle, inAngle;
+
+    if (direction === 'next') {
+      outAngle = currentAngle - 90;
+      inAngle = 90;
+    } else {
+      outAngle = currentAngle + 90;
+      inAngle = -90;
+    }
+
+    // Start rotate out
+    dom.flashcard.style.transition = 'transform 0.2s ease-in';
+    dom.flashcard.style.transform = `rotateY(${outAngle}deg) scale(0.9)`;
+
+    rotateOutTimeout = setTimeout(() => {
+      // Card is edge-on, invisible. Update text and snap to inAngle.
+      dom.flashcard.style.transition = 'none';
+      dom.flashcard.style.transform = `rotateY(${inAngle}deg) scale(0.9)`;
+
+      renderCard();
+      void dom.flashcard.offsetWidth; // Force reflow
+
+      // Pause to show spinner loader
+      rotateInTimeout = setTimeout(() => {
+        // Rotate in to 0deg (front face)
+        dom.flashcard.style.transition = 'transform 0.2s ease-out';
+        dom.flashcard.style.transform = 'rotateY(0deg) scale(1)';
+
+        dom.cardLoader.classList.remove('card-loader--active');
+
+        // Clean up inline styles after animation finishes
+        cleanupTimeout = setTimeout(() => {
+          dom.flashcard.style.transition = '';
+          dom.flashcard.style.transform = '';
+        }, 200);
+      }, 150);
+    }, 200);
+  }
+
   function renderCard() {
     if (state.filteredData.length === 0) {
       dom.cardArab.textContent = '—';
-      dom.cardBadgeFront.textContent = '';
       dom.cardBadgeBack.textContent = '';
+      dom.cardBadgeBack.className = 'card__badge';
       dom.cardTransliterasi.textContent = 'Tidak ada data';
       dom.cardArti.textContent = 'Coba ubah filter atau kata kunci pencarian';
       dom.cardFreq.textContent = '-';
@@ -210,10 +287,22 @@
 
     // Front side
     dom.cardArab.textContent = item.kata_arab || '—';
-    dom.cardBadgeFront.textContent = item.jenis_kata || '';
 
     // Back side
     dom.cardBadgeBack.textContent = item.jenis_kata || '';
+    dom.cardBadgeBack.className = 'card__badge';
+    
+    // Apply dynamic color class based on jenis_kata
+    if (item.jenis_kata) {
+      const type = item.jenis_kata.toLowerCase();
+      if (type === 'isim') {
+        dom.cardBadgeBack.classList.add('card__badge--isim');
+      } else if (type === "fi'il") {
+        dom.cardBadgeBack.classList.add('card__badge--fiil');
+      } else if (type === 'huruf') {
+        dom.cardBadgeBack.classList.add('card__badge--huruf');
+      }
+    }
     dom.cardTransliterasi.textContent = item.transliterasi || '';
     dom.cardArti.textContent = item.arti || '—';
     dom.cardFreq.textContent = item.frekuensi ? `${item.frekuensi}×` : '-';
@@ -241,21 +330,24 @@
   }
 
   function flipCard() {
+    if (dom.cardLoader.classList.contains('card-loader--active')) return;
     state.isFlipped = !state.isFlipped;
     dom.flashcard.classList.toggle('card--flipped');
   }
 
   function nextCard() {
     if (state.filteredData.length === 0) return;
-    state.currentIndex = (state.currentIndex + 1) % state.filteredData.length;
-    renderCard();
+    updateCardWithLoader(() => {
+      state.currentIndex = (state.currentIndex + 1) % state.filteredData.length;
+    }, 'next');
   }
 
   function prevCard() {
     if (state.filteredData.length === 0) return;
-    state.currentIndex =
-      (state.currentIndex - 1 + state.filteredData.length) % state.filteredData.length;
-    renderCard();
+    updateCardWithLoader(() => {
+      state.currentIndex =
+        (state.currentIndex - 1 + state.filteredData.length) % state.filteredData.length;
+    }, 'prev');
   }
 
   function updateStats() {
@@ -319,9 +411,10 @@
       });
     }
 
-    state.filteredData = data;
-    state.currentIndex = 0;
-    renderCard();
+    updateCardWithLoader(() => {
+      state.filteredData = data;
+      state.currentIndex = 0;
+    }, 'none');
   }
 
   // ==================== MODE SWITCHING ====================
@@ -357,16 +450,20 @@
       return;
     }
 
-    const totalQuestions = Math.min(QUIZ_TOTAL, pool.length);
+    const totalQuestions = Math.min(state.quizTotal, pool.length);
 
     // Shuffle and pick questions
     const shuffled = shuffleArray(pool);
-    state.quizQuestions = shuffled.slice(0, totalQuestions).map((item) => ({
-      item: item,
-      options: generateOptions(item, pool),
-      answered: false,
-      correct: false,
-    }));
+    state.quizQuestions = shuffled.slice(0, totalQuestions).map((item) => {
+      const type = Math.random() > 0.5 ? 'arab_to_id' : 'id_to_arab';
+      return {
+        item: item,
+        type: type,
+        options: generateOptions(item, pool, type),
+        answered: false,
+        correct: false,
+      };
+    });
 
     state.quizCurrentIndex = 0;
     state.quizScore = 0;
@@ -379,15 +476,17 @@
     renderQuizQuestion();
   }
 
-  function generateOptions(correctItem, pool) {
-    const options = [correctItem.arti];
+  function generateOptions(correctItem, pool, type) {
+    const isArabToId = type === 'arab_to_id';
+    const correctAnswer = isArabToId ? correctItem.arti : correctItem.kata_arab;
+    const options = [correctAnswer];
 
     // Get distractors
-    const others = pool.filter((p) => p.arti !== correctItem.arti);
+    const others = pool.filter((p) => (isArabToId ? p.arti : p.kata_arab) !== correctAnswer);
     const shuffledOthers = shuffleArray(others);
 
     for (let i = 0; i < 3 && i < shuffledOthers.length; i++) {
-      options.push(shuffledOthers[i].arti);
+      options.push(isArabToId ? shuffledOthers[i].arti : shuffledOthers[i].kata_arab);
     }
 
     return shuffleArray(options);
@@ -404,13 +503,22 @@
     dom.quizScoreLive.textContent = `Skor: ${state.quizScore}`;
 
     // Question
-    dom.quizArab.textContent = q.item.kata_arab;
+    if (q.type === 'arab_to_id') {
+      dom.quizArab.textContent = q.item.kata_arab;
+      dom.quizArab.className = 'quiz-question__arab';
+    } else {
+      dom.quizArab.textContent = q.item.arti;
+      dom.quizArab.className = 'quiz-question__id';
+    }
 
     // Options
     const optionBtns = dom.quizOptions.querySelectorAll('.quiz-option');
     optionBtns.forEach((btn, idx) => {
       btn.textContent = q.options[idx] || '';
       btn.className = 'quiz-option';
+      if (q.type === 'id_to_arab') {
+        btn.classList.add('quiz-option--arab');
+      }
       btn.disabled = false;
       btn.onclick = () => checkAnswer(idx);
     });
@@ -427,7 +535,8 @@
 
     const q = state.quizQuestions[state.quizCurrentIndex];
     const selected = q.options[selectedIdx];
-    const isCorrect = selected === q.item.arti;
+    const correctAnswer = q.type === 'arab_to_id' ? q.item.arti : q.item.kata_arab;
+    const isCorrect = selected === correctAnswer;
 
     q.answered = true;
     q.correct = isCorrect;
@@ -438,7 +547,7 @@
     const optionBtns = dom.quizOptions.querySelectorAll('.quiz-option');
     optionBtns.forEach((btn, idx) => {
       btn.disabled = true;
-      if (q.options[idx] === q.item.arti) {
+      if (q.options[idx] === correctAnswer) {
         btn.classList.add('quiz-option--correct');
       } else if (idx === selectedIdx && !isCorrect) {
         btn.classList.add('quiz-option--wrong');
@@ -449,12 +558,16 @@
     dom.quizFeedback.classList.remove('hidden');
     if (isCorrect) {
       dom.quizFeedback.className = 'quiz-feedback quiz-feedback--correct';
-      dom.quizFeedbackIcon.textContent = '✅';
+      dom.quizFeedbackIcon.innerHTML = '<svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
       dom.quizFeedbackText.textContent = 'Benar! Masya Allah!';
     } else {
       dom.quizFeedback.className = 'quiz-feedback quiz-feedback--wrong';
-      dom.quizFeedbackIcon.textContent = '❌';
-      dom.quizFeedbackText.textContent = `Jawaban yang benar: ${q.item.arti}`;
+      dom.quizFeedbackIcon.innerHTML = '<svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+
+      const answerDisplay = q.type === 'id_to_arab'
+        ? `<span dir="rtl" style="font-family: var(--font-arab); font-size: 1.5rem;">${correctAnswer}</span>`
+        : correctAnswer;
+      dom.quizFeedbackText.innerHTML = `Jawaban yang benar: <br>${answerDisplay}`;
     }
 
     // Auto advance after delay
@@ -486,17 +599,23 @@
 
     // Message based on score
     if (pct >= 80) {
-      dom.resultEmoji.textContent = '🌟';
+      dom.resultEmoji.innerHTML = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="#10B981" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
       dom.resultMessage.textContent =
-        'Masya Allah, luar biasa! Anda sangat menguasai kosakata ini! Terus pertahankan!';
+        'Masya Allah, luar biasa! Anda sangat menguasainya, terus tingkatkan hafalan anda, dan jangan lupa untuk meluruskan niat karena Allah agar berpahala. Barakallahu fiikum';
+      dom.resultScore.style.color = '#10B981';
+      dom.resultPercentage.style.color = '#10B981';
     } else if (pct >= 60) {
-      dom.resultEmoji.textContent = '💪';
+      dom.resultEmoji.innerHTML = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
       dom.resultMessage.textContent =
-        'Bagus! Pemahaman Anda sudah baik. Terus berlatih untuk hasil yang lebih sempurna!';
+        'Masya Allah, bagus! Hafalan Anda sudah baik. Terus berlatih untuk hasil yang lebih optimal, dan jangan lupa untuk meluruskan niat karena Allah agar berpahala. Barakallahu fiikum';
+      dom.resultScore.style.color = '#3b82f6';
+      dom.resultPercentage.style.color = '#3b82f6';
     } else {
-      dom.resultEmoji.textContent = '📖';
+      dom.resultEmoji.innerHTML = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
       dom.resultMessage.textContent =
-        'Jangan menyerah! Ulangi flashcard dan coba lagi kuis ini. Setiap pengulangan menambah pemahaman!';
+        'Jangan menyerah! Ulangi flashcard dan coba lagi kuis ini. Setiap pengulangan insyaAllah meningkatkan hafalan anda, dan jangan lupa untuk meluruskan niat karena Allah agar berpahala. Barakallahu fiikum';
+      dom.resultScore.style.color = '#ef4444';
+      dom.resultPercentage.style.color = '#ef4444';
     }
   }
 
@@ -620,9 +739,27 @@
     dom.navFlashcard.addEventListener('click', () => switchMode('flashcard'));
     dom.navQuiz.addEventListener('click', () => switchMode('quiz'));
 
+    // Quiz Options Listener
+    if (dom.quizQuestionCountOptions && dom.quizQuestionCountOptions.length > 0) {
+      dom.quizQuestionCountOptions.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active class from all
+          dom.quizQuestionCountOptions.forEach(b => b.classList.remove('quiz-settings__btn--active'));
+          // Add active class to clicked
+          btn.classList.add('quiz-settings__btn--active');
+          // Update state
+          state.quizTotal = parseInt(btn.dataset.count);
+          // Update info text
+          if (dom.quizStartCountText) {
+            dom.quizStartCountText.textContent = `${state.quizTotal} Soal Acak`;
+          }
+        });
+      });
+    }
+
     // Quiz
     dom.startQuizBtn.addEventListener('click', startQuiz);
-    dom.retryQuizBtn.addEventListener('click', startQuiz);
+    dom.retryQuizBtn.addEventListener('click', resetQuizUI);
     dom.backToFlashcardBtn.addEventListener('click', () => switchMode('flashcard'));
 
     // Touch swipe on card

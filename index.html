@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="id" dir="ltr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Hafizh Vocab — Website flashcard interaktif untuk belajar kosakata bahasa Arab Al-Qur'an. Fitur flashcard, kuis, dan filter berdasarkan jenis kata.">
+  <meta name="description"
+    content="Hafizh Vocab — Website flashcard interaktif untuk belajar kosakata bahasa Arab Al-Qur'an. Fitur flashcard, kuis, dan filter berdasarkan jenis kata.">
   <meta name="keywords" content="kosakata arab, al-quran, flashcard, belajar bahasa arab, hafizh vocab">
   <meta property="og:title" content="Hafizh Vocab — Flashcard Kosakata Al-Qur'an">
-  <meta property="og:description" content="Belajar kosakata bahasa Arab Al-Qur'an dengan flashcard interaktif dan mode kuis.">
+  <meta property="og:description"
+    content="Belajar kosakata bahasa Arab Al-Qur'an dengan flashcard interaktif dan mode kuis.">
   <meta property="og:type" content="website">
   <title>Hafizh Vocab — Flashcard Kosakata Al-Qur'an</title>
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Local Fonts (Inter & Amiri) -->
+  <link rel="stylesheet" href="assets/css/fonts.css">
 
   <!-- Favicon (SVG inline) -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
 
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- ==================== HEADER ==================== -->
@@ -34,11 +38,24 @@
       </div>
       <nav class="header__nav" id="mainNav">
         <button class="nav-btn nav-btn--active" data-mode="flashcard" id="navFlashcard">
-          <span class="nav-btn__icon">📇</span>
+          <span class="nav-btn__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2" />
+              <polyline points="2 12 12 17 22 12" />
+              <polyline points="2 17 12 22 22 17" />
+            </svg></span>
           <span class="nav-btn__label">Flashcard</span>
         </button>
         <button class="nav-btn" data-mode="quiz" id="navQuiz">
-          <span class="nav-btn__icon">📝</span>
+          <span class="nav-btn__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5h10" />
+              <path d="M11 12h10" />
+              <path d="M11 19h10" />
+              <path d="m3 5 2 2 4-4" />
+              <path d="m3 12 2 2 4-4" />
+              <path d="m3 19 2 2 4-4" />
+            </svg></span>
           <span class="nav-btn__label">Kuis</span>
         </button>
       </nav>
@@ -53,7 +70,12 @@
 
   <!-- ==================== ERROR STATE ==================== -->
   <div class="error-state hidden" id="errorState">
-    <div class="error-state__icon">⚠️</div>
+    <div class="error-state__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+        stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg></div>
     <h2 class="error-state__title">Gagal Memuat Data</h2>
     <p class="error-state__message" id="errorMessage">Pastikan file kosakata.csv tersedia.</p>
     <button class="btn btn--primary" id="retryBtn" onclick="location.reload()">Coba Lagi</button>
@@ -68,14 +90,13 @@
       <!-- Search & Filter Bar -->
       <div class="toolbar" id="toolbar">
         <div class="search-box" id="searchBox">
-          <span class="search-box__icon">🔍</span>
-          <input
-            type="text"
-            class="search-box__input"
-            id="searchInput"
-            placeholder="Cari kata Arab, transliterasi, atau arti..."
-            autocomplete="off"
-          >
+          <span class="search-box__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg></span>
+          <input type="text" class="search-box__input" id="searchInput" placeholder="Cari kata bahasa arab atau artinya"
+            autocomplete="off">
           <button class="search-box__clear hidden" id="searchClear" aria-label="Hapus pencarian">✕</button>
         </div>
         <div class="filter-bar" id="filterBar">
@@ -95,10 +116,12 @@
 
       <!-- Flashcard -->
       <div class="card-container" id="cardContainer">
+        <div class="card-loader" id="cardLoader">
+          <div class="loading__spinner"></div>
+        </div>
         <div class="card" id="flashcard">
           <!-- Front Side -->
           <div class="card__face card__face--front" id="cardFront">
-            <div class="card__badge" id="cardBadgeFront"></div>
             <div class="card__arab" id="cardArab"></div>
             <div class="card__hint">Tap untuk membalik</div>
           </div>
@@ -150,20 +173,58 @@
 
       <!-- Quiz Start Screen -->
       <div class="quiz-start" id="quizStart">
-        <div class="quiz-start__icon">📝</div>
+        <div class="quiz-start__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+            stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5h10" />
+            <path d="M11 12h10" />
+            <path d="M11 19h10" />
+            <path d="m3 5 2 2 4-4" />
+            <path d="m3 12 2 2 4-4" />
+            <path d="m3 19 2 2 4-4" />
+          </svg></div>
         <h2 class="quiz-start__title">Mode Kuis</h2>
-        <p class="quiz-start__desc">Uji pemahaman kosakata Anda! Anda akan diberikan <strong>25 soal</strong> pilihan ganda. Pilih arti yang benar dari kata Arab yang ditampilkan.</p>
+        <p class="quiz-start__desc">Uji pemahaman kosakata Anda! Pilih jumlah soal yang ingin dikerjakan, lalu pilih
+          arti yang benar dari kata Arab yang ditampilkan.</p>
+
+        <div class="quiz-settings">
+          <span class="quiz-settings__label">Jumlah Soal:</span>
+          <div class="quiz-settings__options" id="quizQuestionCountOptions">
+            <button class="quiz-settings__btn" data-count="15">15</button>
+            <button class="quiz-settings__btn quiz-settings__btn--active" data-count="25">25</button>
+            <button class="quiz-settings__btn" data-count="35">35</button>
+            <button class="quiz-settings__btn" data-count="50">50</button>
+          </div>
+        </div>
+
         <div class="quiz-start__info">
           <div class="quiz-start__info-item">
-            <span class="quiz-start__info-icon">❓</span>
-            <span>25 Soal Acak</span>
+            <span class="quiz-start__info-icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg></span>
+            <span id="quizStartCountText">25 Soal Acak</span>
           </div>
           <div class="quiz-start__info-item">
-            <span class="quiz-start__info-icon">🎯</span>
+            <span class="quiz-start__info-icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg></span>
             <span>4 Pilihan Jawaban</span>
           </div>
           <div class="quiz-start__info-item">
-            <span class="quiz-start__info-icon">⏱️</span>
+            <span class="quiz-start__info-icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="13" r="8" />
+                <path d="M12 9v4l2 2" />
+                <path d="M5 3 2 6" />
+                <path d="m22 6-3-3" />
+                <path d="M6.38 18.7 4 21" />
+                <path d="M17.64 18.67 20 21" />
+              </svg></span>
             <span>Tanpa Batas Waktu</span>
           </div>
         </div>
@@ -201,31 +262,51 @@
       <!-- Quiz Result -->
       <div class="quiz-result hidden" id="quizResult">
         <div class="quiz-result__card">
-          <div class="quiz-result__emoji" id="resultEmoji">🌟</div>
           <h2 class="quiz-result__title">Hasil Kuis</h2>
           <div class="quiz-result__score">
             <span class="quiz-result__score-num" id="resultScore">0</span>
             <span class="quiz-result__score-total">/ 25</span>
           </div>
-          <div class="quiz-result__percentage" id="resultPercentage">0%</div>
+          <div class="quiz-result__percentage-wrap">
+            <span class="quiz-result__emoji" id="resultEmoji"><svg width="1em" height="1em" viewBox="0 0 24 24"
+                fill="#F59E0B" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg></span>
+            <span class="quiz-result__percentage" id="resultPercentage">0%</span>
+          </div>
           <p class="quiz-result__message" id="resultMessage"></p>
 
           <div class="quiz-result__actions">
-            <button class="btn btn--primary" id="retryQuizBtn">🔄 Kuis Ulang</button>
-            <button class="btn btn--secondary" id="backToFlashcardBtn">📇 Kembali ke Flashcard</button>
+            <button class="btn btn--primary" id="retryQuizBtn"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg> Kuis Ulang</button>
+            <button class="btn btn--secondary" id="backToFlashcardBtn"><svg width="1.2em" height="1.2em"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 12 12 17 22 12" />
+                <polyline points="2 17 12 22 22 17" />
+              </svg> Kembali ke Flashcard</button>
           </div>
 
           <div class="quiz-result__survey">
             <div class="quiz-result__survey-divider"></div>
-            <p class="quiz-result__survey-text">Bantu kami meningkatkan website ini dengan mengisi kuesioner singkat:</p>
-            <a
-              href="https://forms.gle/XXXXX"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn--survey"
-              id="surveyLink"
-            >
-              📋 Isi Kuesioner Kepuasan
+            <p class="quiz-result__survey-text">Bantu kami meningkatkan aplikasi ini dengan mengisi kuesioner singkat:
+            </p>
+            <a href="https://forms.gle/XXXXX" target="_blank" rel="noopener noreferrer" class="btn btn--survey"
+              id="surveyLink">
+              <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="2" width="6" height="4" rx="2" ry="2" />
+                <path d="M5 15h14" />
+                <path d="M5 9h14" />
+                <path d="M5 21h14" />
+                <path d="M3 5v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-3" />
+                <path d="M8 3H5a2 2 0 0 0-2 2" />
+              </svg> Isi Kuesioner Kepuasan
             </a>
           </div>
         </div>
@@ -242,4 +323,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
