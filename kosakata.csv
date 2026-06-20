@@ -1,0 +1,13 @@
+Template Data Kosakata Bahasa Arab Al-Qur'an — Proyek MPKT-B,,,,,,,,,,,
+Isi data mulai baris 4. Kolom bertanda (*) wajib diisi. Jangan mengubah nama kolom. Ekspor sebagai CSV untuk dikonversi ke JSON.,,,,,,,,,,,
+ID *,Kata Arab *,Transliterasi *,Arti (ID) *,Arti (EN),Jenis Kata *,Frekuensi,Contoh Ayat (Arab),Contoh Ayat (ID),Nama Surat,No. Ayat,Status *
+1,مِن,min,dari,from,Huruf,3226,مِن رَبِّهِمۡ,dari Tuhan mereka,Al-Baqarah,2:5,Sudah
+2,ٱللَّه,Allah,Allah,Allah,Isim,2699,بِسۡمِ ٱللَّهِ,dengan nama Allah,Al-Fatihah,1:1,Sudah
+3,فِى,fī,di / dalam,in / within,Huruf,1701,فِى ٱلۡكِتَٰبِ,di dalam kitab,Al-Baqarah,2:2,Sudah
+4,عَلَىٰ,ʿalā,di atas / atas,upon / over,Huruf,1445,عَلَىٰ صِرَٰطٖ,di atas jalan,Al-Fatihah,1:6,Sudah
+5,رَبّ,rabb,Tuhan / Rabb,Lord,Isim,975,رَبِّ ٱلۡعَٰلَمِينَ,Tuhan semesta alam,Al-Fatihah,1:2,Sudah
+6,إِلَىٰ,ilā,kepada / ke,to / toward,Huruf,742,إِلَىٰ صِرَٰطٖ,ke jalan,Al-Fatihah,1:6,Sudah
+7,قَوۡم,qawm,kaum / umat,people,Isim,383,يَٰقَوۡمِ,wahai kaumku,Al-A'raf,7:59,Sudah
+8,ءَايَة,āyah,ayat / tanda,sign / verse,Isim,382,هَٰذِهِۦٓ ءَايَةٌ,ini adalah tanda,Yusuf,12:7,Sudah
+9,كُلّ,kull,semua / setiap,all / every,Isim,358,كُلُّ نَفۡسٖ,setiap jiwa,Ali 'Imran,3:185,Sudah
+10,رَسُول,rasūl,rasul / utusan,messenger,Isim,332,رَسُولُ ٱللَّهِ,rasul Allah,Al-Fath,48:29,Sudah
