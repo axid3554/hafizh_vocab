@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hafizh Vocab — Website flashcard interaktif untuk belajar kosakata bahasa Arab Al-Qur'an. Fitur flashcard, kuis, dan filter berdasarkan jenis kata.">
+  <meta name="keywords" content="kosakata arab, al-quran, flashcard, belajar bahasa arab, hafizh vocab">
+  <meta property="og:title" content="Hafizh Vocab — Flashcard Kosakata Al-Qur'an">
+  <meta property="og:description" content="Belajar kosakata bahasa Arab Al-Qur'an dengan flashcard interaktif dan mode kuis.">
+  <meta property="og:type" content="website">
+  <title>Hafizh Vocab — Flashcard Kosakata Al-Qur'an</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Favicon (SVG inline) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="header" id="header">
+    <div class="header__container">
+      <div class="header__brand">
+        <img src="AI_Abu_Ismail.png" alt="Logo AI Abu Ismail" class="header__logo" id="headerLogo">
+        <div class="header__text">
+          <h1 class="header__title">Hafizh Vocab</h1>
+          <p class="header__subtitle">Flashcard Kosakata Bahasa Arab Al-Qur'an</p>
+        </div>
+      </div>
+      <nav class="header__nav" id="mainNav">
+        <button class="nav-btn nav-btn--active" data-mode="flashcard" id="navFlashcard">
+          <span class="nav-btn__icon">📇</span>
+          <span class="nav-btn__label">Flashcard</span>
+        </button>
+        <button class="nav-btn" data-mode="quiz" id="navQuiz">
+          <span class="nav-btn__icon">📝</span>
+          <span class="nav-btn__label">Kuis</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== LOADING STATE ==================== -->
+  <div class="loading" id="loadingState">
+    <div class="loading__spinner"></div>
+    <p class="loading__text">Memuat kosakata...</p>
+  </div>
+
+  <!-- ==================== ERROR STATE ==================== -->
+  <div class="error-state hidden" id="errorState">
+    <div class="error-state__icon">⚠️</div>
+    <h2 class="error-state__title">Gagal Memuat Data</h2>
+    <p class="error-state__message" id="errorMessage">Pastikan file kosakata.csv tersedia.</p>
+    <button class="btn btn--primary" id="retryBtn" onclick="location.reload()">Coba Lagi</button>
+  </div>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main hidden" id="mainContent">
+
+    <!-- ========== FLASHCARD MODE ========== -->
+    <section class="flashcard-section" id="flashcardSection">
+
+      <!-- Search & Filter Bar -->
+      <div class="toolbar" id="toolbar">
+        <div class="search-box" id="searchBox">
+          <span class="search-box__icon">🔍</span>
+          <input
+            type="text"
+            class="search-box__input"
+            id="searchInput"
+            placeholder="Cari kata Arab, transliterasi, atau arti..."
+            autocomplete="off"
+          >
+          <button class="search-box__clear hidden" id="searchClear" aria-label="Hapus pencarian">✕</button>
+        </div>
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn filter-btn--active" data-filter="Semua" id="filterAll">Semua</button>
+          <button class="filter-btn" data-filter="Isim" id="filterIsim">Isim</button>
+          <button class="filter-btn" data-filter="Fi'il" id="filterFiil">Fi'il</button>
+          <button class="filter-btn" data-filter="Huruf" id="filterHuruf">Huruf</button>
+        </div>
+      </div>
+
+      <!-- Stats ribbon -->
+      <div class="stats-ribbon" id="statsRibbon">
+        <span class="stats-ribbon__count" id="statsCount">10 kosakata</span>
+        <span class="stats-ribbon__separator">•</span>
+        <span class="stats-ribbon__current" id="statsCurrent">Kartu 1 dari 10</span>
+      </div>
+
+      <!-- Flashcard -->
+      <div class="card-container" id="cardContainer">
+        <div class="card" id="flashcard">
+          <!-- Front Side -->
+          <div class="card__face card__face--front" id="cardFront">
+            <div class="card__badge" id="cardBadgeFront"></div>
+            <div class="card__arab" id="cardArab"></div>
+            <div class="card__hint">Tap untuk membalik</div>
+          </div>
+          <!-- Back Side -->
+          <div class="card__face card__face--back" id="cardBack">
+            <div class="card__badge" id="cardBadgeBack"></div>
+            <div class="card__transliterasi" id="cardTransliterasi"></div>
+            <div class="card__arti" id="cardArti"></div>
+            <div class="card__divider"></div>
+            <div class="card__detail" id="cardDetail">
+              <div class="card__detail-row">
+                <span class="card__detail-label">Frekuensi:</span>
+                <span class="card__detail-value" id="cardFreq"></span>
+              </div>
+              <div class="card__detail-row" id="cardAyatRow">
+                <span class="card__detail-label">Contoh Ayat:</span>
+                <div class="card__ayat">
+                  <span class="card__ayat-arab" id="cardAyatArab"></span>
+                  <span class="card__ayat-arti" id="cardAyatArti"></span>
+                  <span class="card__ayat-ref" id="cardAyatRef"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="card-nav" id="cardNav">
+        <button class="btn btn--nav" id="prevBtn" aria-label="Kartu sebelumnya">
+          <span class="btn__icon">←</span>
+          <span class="btn__text">Sebelumnya</span>
+        </button>
+        <button class="btn btn--nav" id="nextBtn" aria-label="Kartu berikutnya">
+          <span class="btn__text">Berikutnya</span>
+          <span class="btn__icon">→</span>
+        </button>
+      </div>
+
+      <!-- Keyboard hint (desktop only) -->
+      <div class="keyboard-hint" id="keyboardHint">
+        <span>← → Navigasi</span>
+        <span>Spasi Balik kartu</span>
+      </div>
+    </section>
+
+    <!-- ========== QUIZ MODE ========== -->
+    <section class="quiz-section hidden" id="quizSection">
+
+      <!-- Quiz Start Screen -->
+      <div class="quiz-start" id="quizStart">
+        <div class="quiz-start__icon">📝</div>
+        <h2 class="quiz-start__title">Mode Kuis</h2>
+        <p class="quiz-start__desc">Uji pemahaman kosakata Anda! Anda akan diberikan <strong>25 soal</strong> pilihan ganda. Pilih arti yang benar dari kata Arab yang ditampilkan.</p>
+        <div class="quiz-start__info">
+          <div class="quiz-start__info-item">
+            <span class="quiz-start__info-icon">❓</span>
+            <span>25 Soal Acak</span>
+          </div>
+          <div class="quiz-start__info-item">
+            <span class="quiz-start__info-icon">🎯</span>
+            <span>4 Pilihan Jawaban</span>
+          </div>
+          <div class="quiz-start__info-item">
+            <span class="quiz-start__info-icon">⏱️</span>
+            <span>Tanpa Batas Waktu</span>
+          </div>
+        </div>
+        <button class="btn btn--primary btn--lg" id="startQuizBtn">Mulai Kuis</button>
+      </div>
+
+      <!-- Quiz In-Progress -->
+      <div class="quiz-play hidden" id="quizPlay">
+        <div class="quiz-progress" id="quizProgress">
+          <div class="quiz-progress__bar">
+            <div class="quiz-progress__fill" id="quizProgressFill"></div>
+          </div>
+          <span class="quiz-progress__text" id="quizProgressText">Soal 1 / 25</span>
+          <span class="quiz-progress__score" id="quizScoreLive">Skor: 0</span>
+        </div>
+
+        <div class="quiz-question" id="quizQuestion">
+          <p class="quiz-question__label">Apa arti dari kata berikut?</p>
+          <div class="quiz-question__arab" id="quizArab"></div>
+        </div>
+
+        <div class="quiz-options" id="quizOptions">
+          <button class="quiz-option" id="quizOpt0"></button>
+          <button class="quiz-option" id="quizOpt1"></button>
+          <button class="quiz-option" id="quizOpt2"></button>
+          <button class="quiz-option" id="quizOpt3"></button>
+        </div>
+
+        <div class="quiz-feedback hidden" id="quizFeedback">
+          <span class="quiz-feedback__icon" id="quizFeedbackIcon"></span>
+          <span class="quiz-feedback__text" id="quizFeedbackText"></span>
+        </div>
+      </div>
+
+      <!-- Quiz Result -->
+      <div class="quiz-result hidden" id="quizResult">
+        <div class="quiz-result__card">
+          <div class="quiz-result__emoji" id="resultEmoji">🌟</div>
+          <h2 class="quiz-result__title">Hasil Kuis</h2>
+          <div class="quiz-result__score">
+            <span class="quiz-result__score-num" id="resultScore">0</span>
+            <span class="quiz-result__score-total">/ 25</span>
+          </div>
+          <div class="quiz-result__percentage" id="resultPercentage">0%</div>
+          <p class="quiz-result__message" id="resultMessage"></p>
+
+          <div class="quiz-result__actions">
+            <button class="btn btn--primary" id="retryQuizBtn">🔄 Kuis Ulang</button>
+            <button class="btn btn--secondary" id="backToFlashcardBtn">📇 Kembali ke Flashcard</button>
+          </div>
+
+          <div class="quiz-result__survey">
+            <div class="quiz-result__survey-divider"></div>
+            <p class="quiz-result__survey-text">Bantu kami meningkatkan website ini dengan mengisi kuesioner singkat:</p>
+            <a
+              href="https://forms.gle/XXXXX"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn--survey"
+              id="surveyLink"
+            >
+              📋 Isi Kuesioner Kepuasan
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer" id="footer">
+    <p class="footer__text">Hafizh Vocab — Proyek MPKT-B &copy; 2025</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
