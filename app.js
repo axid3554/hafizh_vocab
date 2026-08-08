@@ -38,6 +38,7 @@
     navFlashcard: $('navFlashcard'),
     navQuiz: $('navQuiz'),
     navSurvey: $('navSurvey'),
+    surveyIframe: $('surveyIframe'),
     navTentang: $('navTentang'),
     // Modal
     tentangModal: $('tentangModal'),
@@ -783,7 +784,7 @@
     dom.navQuiz.addEventListener('click', () => switchMode('quiz'));
     if (dom.navSurvey) dom.navSurvey.addEventListener('click', () => switchMode('survey'));
 
-    // Tentang Modal
+    // Modal Tentang
     if (dom.navTentang) {
       dom.navTentang.addEventListener('click', () => {
         dom.tentangModal.classList.remove('hidden');

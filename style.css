@@ -1413,6 +1413,7 @@ body {
     margin-right: -2.5rem;
     width: calc(100% + 5rem);
     border-radius: 0;
+    height: 80vh;
   }
 
   .survey-title {
