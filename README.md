@@ -21,7 +21,7 @@ hafizh_vocab/
 ├── style.css           — Styling dan animasi
 ├── app.js              — Logika aplikasi
 ├── kosakata.csv        — Data kosakata (sumber data)
-├── AI_Abu_Ismail.png   — Logo
+├── logo.png   — Logo
 └── README.md           — Dokumentasi (file ini)
 ```
 

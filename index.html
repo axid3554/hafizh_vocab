@@ -18,8 +18,7 @@
   <link rel="stylesheet" href="assets/css/fonts.css">
 
   <!-- Favicon (SVG inline) -->
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="icon" href="favicon.ico">
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -30,7 +29,7 @@
   <header class="header" id="header">
     <div class="header__container">
       <div class="header__brand">
-        <img src="AI_Abu_Ismail.png" alt="Logo AI Abu Ismail" class="header__logo" id="headerLogo">
+        <img src="logo.png" alt="Logo AI Abu Ismail" class="header__logo" id="headerLogo">
         <div class="header__text">
           <h1 class="header__title">Hafizh Vocab</h1>
           <p class="header__subtitle">Flashcard Kosakata Bahasa Arab Al-Qur'an</p>
@@ -57,6 +56,27 @@
               <path d="m3 19 2 2 4-4" />
             </svg></span>
           <span class="nav-btn__label">Kuis</span>
+        </button>
+        <button class="nav-btn" id="navSurvey" title="Kuesioner Kepuasan">
+          <span class="nav-btn__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="2" width="6" height="4" rx="2" ry="2" />
+              <path d="M5 15h14" />
+              <path d="M5 9h14" />
+              <path d="M5 21h14" />
+              <path d="M3 5v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-3" />
+              <path d="M8 3H5a2 2 0 0 0-2 2" />
+            </svg></span>
+          <span class="nav-btn__label">Kuesioner</span>
+        </button>
+        <button class="nav-btn" id="navTentang">
+          <span class="nav-btn__icon"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg></span>
+          <span class="nav-btn__label">Tentang</span>
         </button>
       </nav>
     </div>
@@ -109,9 +129,7 @@
 
       <!-- Stats ribbon -->
       <div class="stats-ribbon" id="statsRibbon">
-        <span class="stats-ribbon__count" id="statsCount">10 kosakata</span>
-        <span class="stats-ribbon__separator">•</span>
-        <span class="stats-ribbon__current" id="statsCurrent">Kartu 1 dari 10</span>
+        <span class="stats-ribbon__current" id="statsCurrent">Kartu 1 dari 10 Kosakata</span>
       </div>
 
       <!-- Flashcard -->
@@ -136,6 +154,10 @@
                 <span class="card__detail-label">Frekuensi:</span>
                 <span class="card__detail-value" id="cardFreq"></span>
               </div>
+              <div class="card__detail-row" id="cardKeteranganRow">
+                <span class="card__detail-label">Keterangan:</span>
+                <span class="card__detail-value" id="cardKeterangan"></span>
+              </div>
               <div class="card__detail-row" id="cardAyatRow">
                 <span class="card__detail-label">Contoh Ayat:</span>
                 <div class="card__ayat">
@@ -144,6 +166,12 @@
                   <span class="card__ayat-ref" id="cardAyatRef"></span>
                 </div>
               </div>
+            </div>
+            <div class="card__scroll-hint hidden" id="cardScrollHint">
+              <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M19 12l-7 7-7-7" />
+              </svg>
             </div>
           </div>
         </div>
@@ -265,7 +293,7 @@
           <h2 class="quiz-result__title">Hasil Kuis</h2>
           <div class="quiz-result__score">
             <span class="quiz-result__score-num" id="resultScore">0</span>
-            <span class="quiz-result__score-total">/ 25</span>
+            <span class="quiz-result__score-total" id="resultTotal">/ 25</span>
           </div>
           <div class="quiz-result__percentage-wrap">
             <span class="quiz-result__emoji" id="resultEmoji"><svg width="1em" height="1em" viewBox="0 0 24 24"
@@ -314,12 +342,106 @@
 
     </section>
 
+    <!-- ==================== SURVEY SECTION ==================== -->
+    <section class="survey-section hidden" id="surveySection">
+      <div class="survey-container">
+        <h2 class="survey-title">Kuesioner Evaluasi Pembelajaran</h2>
+        <p class="survey-desc">Terima kasih telah mencoba Hafizh Vocab. Mohon luangkan waktu untuk mengisi kuesioner
+          singkat ini.</p>
+        <div class="survey-iframe-wrapper">
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfhtmKDG9uSGcHby_NIh0P0__c83ljIWHHwFs0DZqRk0iL2fA/viewform?embedded=true"
+            width="640" height="1539" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ==================== FOOTER ==================== -->
   <footer class="footer" id="footer">
-    <p class="footer__text">Hafizh Vocab — Proyek MPKT-B &copy; 2025</p>
+    <p class="footer__text">&copy; 2026 Hafizh Vocab — Proyek MPKT-B Kel.3 Ikhwan</p>
   </footer>
+
+  <!-- ==================== TENTANG MODAL ==================== -->
+  <div class="modal hidden" id="tentangModal">
+    <div class="modal__backdrop" id="tentangBackdrop"></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 class="modal__title">Tentang Hafizh Vocab</h2>
+        <button class="modal__close" id="tentangClose" aria-label="Tutup">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="modal__logos">
+          <img src="logo_tsl.png" alt="Logo TSL" class="modal__logo">
+          <img src="logo_stpii.png" alt="Logo STPII" class="modal__logo">
+          <img src="logo.png" alt="Logo Hafizh Vocab" class="modal__logo">
+        </div>
+        <p>Aplikasi ini dibuat oleh kelompok 3 Ikhwan pada mata kuliah MPKT-B untuk memenuhi tugas akhir semester.
+          Project ini
+          dibuat dengan latar belakang, <br>"Al-Qur’an diturunkan dalam bahasa Arab, namun sebagian besar mahasiswa
+          Muslim
+          di Indonesia tidak memiliki latar belakang pendidikan bahasa Arab yang memadai. Akibatnya, banyak yang rutin
+          membaca Al-Qur’an namun mengalami keterputusan makna antara lafal yang diucapkan dan pemahaman terhadap
+          isinya. Hal ini bertentangan dengan salah satu tujuan MPKT, yaitu mengintegrasikan kaidah Qur’an ke dalam
+          kehidupan nyata secara bermakna, bukan sekadar ritual membaca.<br>Metode menghafal kosakata Al-Qur’an secara
+          konvensional (buku, kartu fisik) cenderung kurang praktis untuk mahasiswa yang sibuk dan terbiasa dengan
+          perangkat digital. Pendekatan flashcard digital, yang telah terbukti efektif dalam penelitian pembelajaran
+          bahasa, dapat menjadi solusi yang lebih sesuai dengan kebiasaan belajar mahasiswa saat ini.
+          "</p>
+        <p>Aplikasi ini dibuat untuk memfasilitasi pembelajaran kosakata bahasa Arab Al-Qur'an. Data kosakata diambil
+          dan dikurasi dari beberapa sumber berikut:</p>
+
+        <h3 class="modal__subtitle">Daftar Sumber Data yang Digunakan</h3>
+        <div class="table-responsive">
+          <table class="modal__table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Sumber / URL</th>
+                <th>Digunakan untuk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><a href="https://corpus.quran.com/lemmas.jsp" target="_blank"
+                    rel="noopener noreferrer">https://corpus.quran.com/lemmas.jsp</a></td>
+                <td>Daftar frekuensi lemma seluruh Al-Qur'an, diurutkan dari paling sering muncul. Sumber utama
+                  penentuan 100 kosakata prioritas.</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><a href="https://corpus.quran.com/verbs.jsp" target="_blank"
+                    rel="noopener noreferrer">https://corpus.quran.com/verbs.jsp</a></td>
+                <td>Daftar konkordansi fi'il (kata kerja) dan frekuensinya. Digunakan untuk memilih fi'il-fi'il
+                  berfrekuensi tinggi.</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><a href="https://quran.kemenag.go.id/quran/per-ayat" target="_blank"
+                    rel="noopener noreferrer">https://quran.kemenag.go.id/quran/per-ayat</a></td>
+                <td>Teks Arab mushaf standar Indonesia dan terjemahan resmi Kemenag RI edisi penyempurnaan 2019. Sumber
+                  utama teks Arab dan terjemahan Bahasa Indonesia.</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><a href="https://quran.com" target="_blank" rel="noopener noreferrer">https://quran.com</a></td>
+                <td>Terjemahan Bahasa Inggris Saheeh International. Digunakan untuk seluruh kolom Contoh Ayat (EN).</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><a href="https://corpus.quran.com/qurandictionary.jsp" target="_blank"
+                    rel="noopener noreferrer">https://corpus.quran.com/qurandictionary.jsp</a></td>
+                <td>Kamus Al-Qur'an dari Quranic Arabic Corpus untuk verifikasi makna kata dan informasi morfologi (Ket
+                  Kata).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

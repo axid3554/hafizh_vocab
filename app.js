@@ -37,9 +37,21 @@
     // Nav
     navFlashcard: $('navFlashcard'),
     navQuiz: $('navQuiz'),
-    // Flashcard
+    navSurvey: $('navSurvey'),
+    navTentang: $('navTentang'),
+    // Modal
+    tentangModal: $('tentangModal'),
+    tentangBackdrop: $('tentangBackdrop'),
+    tentangClose: $('tentangClose'),
+    tentangClose: $('tentangClose'),
+    // Sections
     flashcardSection: $('flashcardSection'),
+    quizSection: $('quizSection'),
+    surveySection: $('surveySection'),
+    // Flashcard
     flashcard: $('flashcard'),
+    cardBack: $('cardBack'),
+    cardScrollHint: $('cardScrollHint'),
     cardContainer: $('cardContainer'),
     cardLoader: $('cardLoader'),
     cardArab: $('cardArab'),
@@ -47,12 +59,13 @@
     cardTransliterasi: $('cardTransliterasi'),
     cardArti: $('cardArti'),
     cardFreq: $('cardFreq'),
+    cardKeteranganRow: $('cardKeteranganRow'),
+    cardKeterangan: $('cardKeterangan'),
     cardAyatArab: $('cardAyatArab'),
     cardAyatArti: $('cardAyatArti'),
     cardAyatRef: $('cardAyatRef'),
     cardAyatRow: $('cardAyatRow'),
     // Stats
-    statsCount: $('statsCount'),
     statsCurrent: $('statsCurrent'),
     // Search
     searchInput: $('searchInput'),
@@ -81,98 +94,20 @@
     resultScore: $('resultScore'),
     resultPercentage: $('resultPercentage'),
     resultMessage: $('resultMessage'),
+    resultTotal: $('resultTotal'),
     retryQuizBtn: $('retryQuizBtn'),
     backToFlashcardBtn: $('backToFlashcardBtn'),
   };
 
-  // ==================== CSV PARSER ====================
-  /**
-   * Parse CSV text into array of objects.
-   * Skips first 2 rows (template description), uses row 3 as header.
-   */
-  function parseCSV(text) {
-    const lines = text.split('\n').filter((l) => l.trim() !== '');
-    if (lines.length < 4) return [];
-
-    // Row 3 (index 2) = header names
-    const headers = parseCSVLine(lines[2]);
-
-    // Map header names to clean keys
-    const keyMap = {
-      'ID *': 'id',
-      'Kata Arab *': 'kata_arab',
-      'Transliterasi *': 'transliterasi',
-      'Arti (ID) *': 'arti',
-      'Arti (EN)': 'arti_en',
-      'Jenis Kata *': 'jenis_kata',
-      'Frekuensi': 'frekuensi',
-      'Contoh Ayat (Arab)': 'contoh_ayat_ar',
-      'Contoh Ayat (ID)': 'contoh_ayat_id',
-      'Nama Surat': 'nama_surat',
-      'No. Ayat': 'nomor_ayat',
-      'Status *': 'status_verifikasi',
-    };
-
-    const keys = headers.map((h) => keyMap[h.trim()] || h.trim().toLowerCase().replace(/\s+/g, '_'));
-
-    const data = [];
-    for (let i = 3; i < lines.length; i++) {
-      const values = parseCSVLine(lines[i]);
-      if (!values[0] || !values[1]) continue; // skip empty rows
-
-      const obj = {};
-      keys.forEach((key, idx) => {
-        obj[key] = (values[idx] || '').trim();
-      });
-      data.push(obj);
-    }
-    return data;
-  }
-
-  /**
-   * Parse a single CSV line, handling quoted fields with commas.
-   */
-  function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (inQuotes) {
-        if (ch === '"' && line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else if (ch === '"') {
-          inQuotes = false;
-        } else {
-          current += ch;
-        }
-      } else {
-        if (ch === '"') {
-          inQuotes = true;
-        } else if (ch === ',') {
-          result.push(current);
-          current = '';
-        } else {
-          current += ch;
-        }
-      }
-    }
-    result.push(current);
-    return result;
-  }
-
   // ==================== DATA LOADING ====================
   async function loadData() {
     try {
-      const response = await fetch('kosakata.csv');
+      const response = await fetch('kosakata.json');
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const text = await response.text();
-      state.allData = parseCSV(text);
+      state.allData = await response.json();
 
       if (state.allData.length === 0) {
-        throw new Error('Data kosakata kosong atau format CSV tidak sesuai.');
+        throw new Error('Data kosakata kosong.');
       }
 
       state.filteredData = [...state.allData];
@@ -186,7 +121,7 @@
     } catch (err) {
       dom.loadingState.classList.add('hidden');
       dom.errorState.classList.remove('hidden');
-      dom.errorMessage.textContent = err.message || 'Pastikan file kosakata.csv tersedia.';
+      dom.errorMessage.textContent = err.message || 'Pastikan file kosakata.json tersedia.';
       console.error('Gagal memuat data:', err);
     }
   }
@@ -268,6 +203,46 @@
     }, 200);
   }
 
+  function getBaseMatchWord(normWord) {
+    let w = normWord;
+    if (w.length > 3 && w.endsWith('ه')) w = w.slice(0, -1);
+    if (w.length > 3 && w.endsWith('ا')) w = w.slice(0, -1);
+    return w;
+  }
+
+  function highlightArabicWord(sentence, word) {
+    if (!sentence || !word) return sentence;
+    const normWord = normalizeArabic(word);
+    const searchStr = getBaseMatchWord(normWord);
+    
+    const words = sentence.split(' ');
+    let matched = false;
+    
+    const highlightedWords = words.map(w => {
+      const normW = normalizeArabic(w);
+      if (!matched && (normW.includes(normWord) || normW.includes(searchStr))) {
+        matched = true;
+        return `<span class="highlight-arab">${w}</span>`;
+      }
+      return w;
+    });
+    
+    // If still not matched, try a very fuzzy root match (first 3 letters of searchStr)
+    if (!matched && searchStr.length >= 3) {
+      const rootApprox = searchStr.substring(0, 3);
+      for (let i = 0; i < words.length; i++) {
+        const normW = normalizeArabic(words[i]);
+        if (normW.includes(rootApprox)) {
+           words[i] = `<span class="highlight-arab">${words[i]}</span>`;
+           break;
+        }
+      }
+      return words.join(' ');
+    }
+    
+    return highlightedWords.join(' ');
+  }
+
   function renderCard() {
     if (state.filteredData.length === 0) {
       dom.cardArab.textContent = '—';
@@ -280,6 +255,7 @@
       dom.cardAyatArti.textContent = '';
       dom.cardAyatRef.textContent = '';
       updateStats();
+      dom.cardScrollHint.classList.add('hidden');
       return;
     }
 
@@ -307,10 +283,17 @@
     dom.cardArti.textContent = item.arti || '—';
     dom.cardFreq.textContent = item.frekuensi ? `${item.frekuensi}×` : '-';
 
+    if (item.keterangan) {
+      dom.cardKeteranganRow.style.display = '';
+      dom.cardKeterangan.textContent = item.keterangan;
+    } else {
+      dom.cardKeteranganRow.style.display = 'none';
+    }
+
     // Contoh ayat
     if (item.contoh_ayat_ar) {
       dom.cardAyatRow.style.display = '';
-      dom.cardAyatArab.textContent = item.contoh_ayat_ar;
+      dom.cardAyatArab.innerHTML = highlightArabicWord(item.contoh_ayat_ar, item.kata_arab);
       dom.cardAyatArti.textContent = item.contoh_ayat_id || '';
       dom.cardAyatRef.textContent =
         item.nama_surat && item.nomor_ayat
@@ -325,14 +308,31 @@
       state.isFlipped = false;
       dom.flashcard.classList.remove('card--flipped');
     }
-
+    
+    // Check scroll
+    setTimeout(checkScrollHint, 50);
     updateStats();
+  }
+
+  function checkScrollHint() {
+    if (state.isFlipped && dom.cardBack.scrollHeight > dom.cardBack.clientHeight + 10) {
+      // It's scrollable and on back face
+      if (dom.cardBack.scrollHeight - dom.cardBack.scrollTop - dom.cardBack.clientHeight < 15) {
+        dom.cardScrollHint.style.opacity = '0';
+      } else {
+        dom.cardScrollHint.classList.remove('hidden');
+        dom.cardScrollHint.style.opacity = '0.9';
+      }
+    } else {
+      dom.cardScrollHint.classList.add('hidden');
+    }
   }
 
   function flipCard() {
     if (dom.cardLoader.classList.contains('card-loader--active')) return;
     state.isFlipped = !state.isFlipped;
     dom.flashcard.classList.toggle('card--flipped');
+    setTimeout(checkScrollHint, 300);
   }
 
   function nextCard() {
@@ -352,9 +352,8 @@
 
   function updateStats() {
     const total = state.filteredData.length;
-    dom.statsCount.textContent = `${total} kosakata`;
     dom.statsCurrent.textContent =
-      total > 0 ? `Kartu ${state.currentIndex + 1} dari ${total}` : 'Tidak ada kartu';
+      total > 0 ? `Kartu ${state.currentIndex + 1} dari ${total} Kosakata` : 'Tidak ada kartu';
   }
 
   // ==================== FILTER ====================
@@ -422,16 +421,22 @@
     // Update nav buttons
     dom.navFlashcard.classList.toggle('nav-btn--active', mode === 'flashcard');
     dom.navQuiz.classList.toggle('nav-btn--active', mode === 'quiz');
+    if (dom.navSurvey) dom.navSurvey.classList.toggle('nav-btn--active', mode === 'survey');
+
+    dom.flashcardSection.classList.add('hidden');
+    dom.quizSection.classList.add('hidden');
+    if (dom.surveySection) dom.surveySection.classList.add('hidden');
 
     if (mode === 'flashcard') {
       dom.flashcardSection.classList.remove('hidden');
-      dom.quizSection.classList.add('hidden');
       state.quizMode = false;
-    } else {
-      dom.flashcardSection.classList.add('hidden');
+    } else if (mode === 'quiz') {
       dom.quizSection.classList.remove('hidden');
       state.quizMode = true;
       resetQuizUI();
+    } else if (mode === 'survey') {
+      if (dom.surveySection) dom.surveySection.classList.remove('hidden');
+      state.quizMode = false;
     }
   }
 
@@ -592,6 +597,10 @@
     // Animate score counter
     animateCounter(dom.resultScore, 0, score, 800);
 
+    if (dom.resultTotal) {
+      dom.resultTotal.textContent = `/ ${total}`;
+    }
+
     dom.resultPercentage.textContent = `${pct}%`;
 
     // Update progress bar to 100%
@@ -670,8 +679,10 @@
    */
   function normalizeArabic(text) {
     return text
-      // Remove Arabic diacritical marks (harakat): U+064B to U+065F, U+0670
-      .replace(/[\u064B-\u065F\u0670]/g, '')
+      // Convert superscript alef to normal alef BEFORE removing diacritics
+      .replace(/\u0670/g, '\u0627')
+      // Remove Arabic diacritical marks (harakat): U+064B to U+065F
+      .replace(/[\u064B-\u065F]/g, '')
       // Remove tatweel (kashida)
       .replace(/\u0640/g, '')
       // Remove Quranic annotation signs (small high/low letters, etc.)
@@ -698,8 +709,9 @@
 
   // ==================== EVENT LISTENERS ====================
   function initEventListeners() {
-    // Card flip
+    // Flashcard Interactions
     dom.cardContainer.addEventListener('click', flipCard);
+    dom.cardBack.addEventListener('scroll', checkScrollHint);
 
     // Navigation
     dom.prevBtn.addEventListener('click', prevCard);
@@ -736,8 +748,23 @@
     dom.searchClear.addEventListener('click', clearSearch);
 
     // Mode switching
+    // Mode switching
     dom.navFlashcard.addEventListener('click', () => switchMode('flashcard'));
     dom.navQuiz.addEventListener('click', () => switchMode('quiz'));
+    if (dom.navSurvey) dom.navSurvey.addEventListener('click', () => switchMode('survey'));
+
+    // Tentang Modal
+    if (dom.navTentang) {
+      dom.navTentang.addEventListener('click', () => {
+        dom.tentangModal.classList.remove('hidden');
+      });
+      dom.tentangClose.addEventListener('click', () => {
+        dom.tentangModal.classList.add('hidden');
+      });
+      dom.tentangBackdrop.addEventListener('click', () => {
+        dom.tentangModal.classList.add('hidden');
+      });
+    }
 
     // Quiz Options Listener
     if (dom.quizQuestionCountOptions && dom.quizQuestionCountOptions.length > 0) {
