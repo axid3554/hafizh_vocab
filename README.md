@@ -1,6 +1,6 @@
 # 📖 Hafizh Vocab — Flashcard Kosakata Al-Qur'an
 
-Website *flashcard* interaktif untuk mempelajari kosakata bahasa Arab yang sering muncul dalam Al-Qur'an. Aplikasi ini adalah proyek akhir semester MPKT-B (Kelompok 3 Ikhwan). Dibangun secara murni (Vanilla) menggunakan HTML, CSS, dan JavaScript tanpa *framework*.
+Website *flashcard* interaktif untuk mempelajari kosakata bahasa Arab yang sering muncul dalam Al-Qur'an. Aplikasi ini adalah Project akhir semester MPKT-B (Kelompok 3 Ikhwan). Dibangun secara murni (Vanilla) menggunakan HTML, CSS, dan JavaScript tanpa *framework*.
 
 ## ✨ Fitur Utama
 
@@ -25,7 +25,7 @@ hafizh_vocab/
 ├── logo.png             — Logo Hafizh Vocab
 ├── logo_tsl.png         — Logo instansi (TSL)
 ├── logo_stpii.png       — Logo instansi (STPII)
-└── README.md            — Dokumentasi proyek ini
+└── README.md            — Dokumentasi Project ini
 ```
 
 ## 🚀 Panduan Penggunaan & Update Data
@@ -35,7 +35,7 @@ Aplikasi web ini menggunakan file `kosakata.json` sebagai sumber data utamanya a
 1. **Edit File CSV:**
    Buka file `kosakata.csv` menggunakan Excel/Spreadsheet. Tambahkan atau edit kata-katanya, lalu simpan (pastikan menggunakan format `CSV UTF-8`).
 2. **Jalankan Script Konversi:**
-   Buka terminal/CMD di dalam folder proyek, lalu jalankan script Python ini:
+   Buka terminal/CMD di dalam folder Project, lalu jalankan script Python ini:
    ```bash
    python convert.py
    ```
@@ -62,4 +62,4 @@ Aplikasi ini dibuat sebagai bagian dari tugas MPKT-B Kelompok 3 (Ikhwan) dengan 
 Didukung secara teknis dan konseptual untuk memberikan solusi belajar digital (metode *flashcard*) yang lebih cocok, responsif, dan praktis untuk kebiasaan mahasiswa saat ini.
 
 ---
-© 2026 Hafizh Vocab — Proyek MPKT-B Kel. 3 Ikhwan
+© 2026 Hafizh Vocab — Project MPKT-B Kel. 3 Ikhwan
