@@ -58,11 +58,13 @@
     cardBadgeBack: $('cardBadgeBack'),
     cardTransliterasi: $('cardTransliterasi'),
     cardArti: $('cardArti'),
+    cardArtiEn: $('cardArtiEn'),
     cardFreq: $('cardFreq'),
     cardKeteranganRow: $('cardKeteranganRow'),
     cardKeterangan: $('cardKeterangan'),
     cardAyatArab: $('cardAyatArab'),
     cardAyatArti: $('cardAyatArti'),
+    cardAyatArtiEn: $('cardAyatArtiEn'),
     cardAyatRef: $('cardAyatRef'),
     cardAyatRow: $('cardAyatRow'),
     // Stats
@@ -252,9 +254,11 @@
       dom.cardBadgeBack.className = 'card__badge';
       dom.cardTransliterasi.textContent = 'Tidak ada data';
       dom.cardArti.textContent = 'Coba ubah filter atau kata kunci pencarian';
+      dom.cardArtiEn.textContent = '';
       dom.cardFreq.textContent = '-';
       dom.cardAyatArab.textContent = '';
       dom.cardAyatArti.textContent = '';
+      dom.cardAyatArtiEn.textContent = '';
       dom.cardAyatRef.textContent = '';
       updateStats();
       dom.cardScrollHint.classList.add('hidden');
@@ -283,6 +287,15 @@
     }
     dom.cardTransliterasi.textContent = item.transliterasi || '';
     dom.cardArti.textContent = item.arti || '—';
+    
+    if (item.arti_en) {
+      dom.cardArtiEn.textContent = item.arti_en;
+      dom.cardArtiEn.classList.remove('hidden');
+    } else {
+      dom.cardArtiEn.textContent = '';
+      dom.cardArtiEn.classList.add('hidden');
+    }
+
     dom.cardFreq.textContent = item.frekuensi ? `${item.frekuensi}×` : '-';
 
     if (item.keterangan) {
@@ -297,6 +310,15 @@
       dom.cardAyatRow.style.display = '';
       dom.cardAyatArab.innerHTML = highlightArabicWord(item.contoh_ayat_ar, item.kata_arab);
       dom.cardAyatArti.textContent = item.contoh_ayat_id || '';
+      
+      if (item.contoh_ayat_en) {
+        dom.cardAyatArtiEn.textContent = item.contoh_ayat_en;
+        dom.cardAyatArtiEn.classList.remove('hidden');
+      } else {
+        dom.cardAyatArtiEn.textContent = '';
+        dom.cardAyatArtiEn.classList.add('hidden');
+      }
+
       dom.cardAyatRef.textContent =
         item.nama_surat && item.nomor_ayat
           ? `(${item.nama_surat} : ${item.nomor_ayat})`

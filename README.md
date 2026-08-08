@@ -1,81 +1,65 @@
 # 📖 Hafizh Vocab — Flashcard Kosakata Al-Qur'an
 
-Website flashcard interaktif untuk mempelajari kosakata bahasa Arab yang sering muncul dalam Al-Qur'an. Dibangun dengan HTML, CSS, dan JavaScript murni — tanpa framework.
+Website *flashcard* interaktif untuk mempelajari kosakata bahasa Arab yang sering muncul dalam Al-Qur'an. Aplikasi ini adalah proyek akhir semester MPKT-B (Kelompok 3 Ikhwan). Dibangun secara murni (Vanilla) menggunakan HTML, CSS, dan JavaScript tanpa *framework*.
 
-## ✨ Fitur
+## ✨ Fitur Utama
 
-- **Flashcard Interaktif** — Kartu dengan animasi 3D flip. Tap/klik untuk melihat arti.
-- **Navigasi Kartu** — Tombol sebelumnya/berikutnya + keyboard (← →) + swipe di mobile.
-- **Pencarian** — Cari berdasarkan kata Arab, transliterasi, atau arti.
-- **Filter Jenis Kata** — Filter berdasarkan Isim (kata benda), Fi'il (kata kerja), atau Huruf (partikel).
-- **Mode Kuis** — 25 soal pilihan ganda acak untuk menguji pemahaman.
-- **Skor & Feedback** — Feedback visual benar/salah + skor akhir dengan pesan motivasi.
-- **Kuesioner Kepuasan** — Link ke Google Form setelah kuis selesai.
-- **Responsif** — Tampilan optimal di HP maupun laptop.
+- **Flashcard 3D Interaktif** — Kartu bolak-balik dengan animasi 3D *flip*. Teks Arab di sisi depan, dan arti beserta transliterasi, jenis kata, contoh ayat, dan keterangan di sisi belakang.
+- **Responsif Sempurna** — Desain UI dioptimalkan untuk berbagai layar (Desktop, Laptop, Tablet, Mobile) agar kartu selalu muat dalam 1 layar tanpa terpotong.
+- **Pencarian Cepat** — Cari berdasarkan kata Arab, transliterasi, atau arti (tersedia *real-time*).
+- **Filter Berdasarkan Jenis Kata** — Filter khusus untuk Isim (Kata Benda), Fi'il (Kata Kerja), atau Huruf (Partikel).
+- **Sistem Kuis Acak** — Mode pengujian interaktif berupa pilihan ganda (25 soal) dengan *feedback* instan dan sistem persentase kelulusan.
+- **Kuesioner Terintegrasi** — Form evaluasi akademis berbasis Google Forms yang tertanam langsung (*embedded iframe*) ke dalam aplikasi.
+- **Navigasi Nyaman** — Navigasi dapat dilakukan dengan menekan tombol, menggunakan *keyboard* (panah ← → dan spasi), hingga melakukan klik pada ikon panah bawah (*scroll hint*).
 
-## 📁 Struktur File
+## 📁 Struktur File & Direktori
 
-```
+```text
 hafizh_vocab/
-├── index.html          — Halaman utama
-├── style.css           — Styling dan animasi
-├── app.js              — Logika aplikasi
-├── kosakata.csv        — Data kosakata (sumber data)
-├── logo.png   — Logo
-└── README.md           — Dokumentasi (file ini)
+├── index.html           — Halaman utama (Struktur kerangka UI)
+├── style.css            — Gaya tampilan, layout responsif & animasi
+├── app.js               — Logika aplikasi (Navigasi, Kuis, JSON Loader)
+├── kosakata.csv         — Master data kosakata (format Excel/CSV)
+├── kosakata.json        — Data kosakata siap pakai (dihasilkan oleh convert.py)
+├── convert.py           — Script Python untuk konversi CSV ke JSON
+├── logo.png             — Logo Hafizh Vocab
+├── logo_tsl.png         — Logo instansi (TSL)
+├── logo_stpii.png       — Logo instansi (STPII)
+└── README.md            — Dokumentasi proyek ini
 ```
 
-## 🚀 Cara Penggunaan
+## 🚀 Panduan Penggunaan & Update Data
 
-1. Clone atau download repository ini.
-2. Buka `index.html` di browser, atau deploy ke GitHub Pages.
-3. Untuk menambah kosakata, edit file `kosakata.csv` di spreadsheet lalu ekspor ulang sebagai CSV (UTF-8).
+Aplikasi web ini menggunakan file `kosakata.json` sebagai sumber data utamanya agar pemuatan lebih cepat. Jika Anda ingin menambah atau mengedit kosakata, ikuti langkah berikut:
 
-## 📊 Format Data CSV
-
-File `kosakata.csv` memiliki format:
-- **Baris 1–2**: Deskripsi template (diabaikan oleh aplikasi)
-- **Baris 3**: Nama kolom
-- **Baris 4+**: Data kosakata
-
-| Kolom | Keterangan | Wajib |
-|-------|-----------|-------|
-| ID * | Nomor urut | Ya |
-| Kata Arab * | Kata dalam huruf Arab | Ya |
-| Transliterasi * | Cara baca Latin | Ya |
-| Arti (ID) * | Arti dalam bahasa Indonesia | Ya |
-| Arti (EN) | Arti dalam bahasa Inggris | Tidak |
-| Jenis Kata * | Isim / Fi'il / Huruf | Ya |
-| Frekuensi | Jumlah kemunculan dalam Al-Qur'an | Tidak |
-| Contoh Ayat (Arab) | Potongan ayat dalam bahasa Arab | Tidak |
-| Contoh Ayat (ID) | Terjemahan potongan ayat | Tidak |
-| Nama Surat | Nama surat Al-Qur'an | Tidak |
-| No. Ayat | Nomor ayat | Tidak |
-| Status * | Status verifikasi data | Ya |
-
-## 📋 Outline Kuesioner Google Form
-
-Berikut pertanyaan yang direkomendasikan untuk kuesioner kepuasan pengguna (skala 1–5):
-
-| No | Pertanyaan | Tipe Jawaban |
-|----|-----------|-------------|
-| 1 | Seberapa mudah Anda menggunakan website Hafizh Vocab? | Skala 1-5 |
-| 2 | Seberapa menarik tampilan/desain website ini? | Skala 1-5 |
-| 3 | Seberapa membantu fitur flashcard untuk menghafal kosakata? | Skala 1-5 |
-| 4 | Seberapa membantu fitur kuis untuk menguji pemahaman Anda? | Skala 1-5 |
-| 5 | Seberapa besar kemungkinan Anda merekomendasikan website ini kepada teman? | Skala 1-5 |
-| 6 | Saran atau masukan untuk perbaikan website ini? | Teks panjang |
-
-> **Catatan**: Ganti link placeholder `https://forms.gle/XXXXX` di `index.html` dengan link Google Form Anda yang sebenarnya.
+1. **Edit File CSV:**
+   Buka file `kosakata.csv` menggunakan Excel/Spreadsheet. Tambahkan atau edit kata-katanya, lalu simpan (pastikan menggunakan format `CSV UTF-8`).
+2. **Jalankan Script Konversi:**
+   Buka terminal/CMD di dalam folder proyek, lalu jalankan script Python ini:
+   ```bash
+   python convert.py
+   ```
+   Atau jika di sistem operasi tertentu:
+   ```bash
+   python3 convert.py
+   ```
+   *Script* tersebut otomatis membaca perubahan pada `.csv` dan menimpa/memperbarui file `kosakata.json` agar bisa langsung dibaca oleh aplikasi.
+3. **Buka Aplikasi:**
+   Buka file `index.html` menggunakan *browser* modern (Chrome, Edge, Firefox, Safari) atau deploy ke hosting statis seperti GitHub Pages.
 
 ## ⌨️ Shortcut Keyboard
 
-| Tombol | Fungsi |
-|--------|--------|
-| ← | Kartu sebelumnya |
-| → | Kartu berikutnya |
-| Spasi | Balik kartu (flip) |
+| Tombol Keyboard | Fungsi / Aksi |
+|-----------------|---------------|
+| `Panah Kiri (←)`| Berpindah ke kartu **Sebelumnya** |
+| `Panah Kanan (→)`| Berpindah ke kartu **Berikutnya** |
+| `Spasi (Space)` | Membalikkan kartu (Flip) depan-belakang |
 
-## 📄 Lisensi
+## 🎓 Tim Pengembang
 
-Proyek MPKT-B © 2025
+Aplikasi ini dibuat sebagai bagian dari tugas MPKT-B Kelompok 3 (Ikhwan) dengan latar belakang membantu mahasiswa Muslim untuk tidak sekadar membaca ritus Al-Qur'an, namun memahami makna setiap lafalnya. 
+
+Didukung secara teknis dan konseptual untuk memberikan solusi belajar digital (metode *flashcard*) yang lebih cocok, responsif, dan praktis untuk kebiasaan mahasiswa saat ini.
+
+---
+© 2026 Hafizh Vocab — Proyek MPKT-B Kel. 3 Ikhwan
