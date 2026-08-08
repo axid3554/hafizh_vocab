@@ -244,6 +244,8 @@
   }
 
   function renderCard() {
+    dom.cardBack.scrollTop = 0;
+
     if (state.filteredData.length === 0) {
       dom.cardArab.textContent = '—';
       dom.cardBadgeBack.textContent = '';
@@ -712,6 +714,12 @@
     // Flashcard Interactions
     dom.cardContainer.addEventListener('click', flipCard);
     dom.cardBack.addEventListener('scroll', checkScrollHint);
+    
+    // Scroll down when scroll hint is clicked
+    dom.cardScrollHint.addEventListener('click', (e) => {
+      e.stopPropagation(); // Mencegah flipCard (agar tidak membalik kartu)
+      dom.cardBack.scrollBy({ top: 150, behavior: 'smooth' });
+    });
 
     // Navigation
     dom.prevBtn.addEventListener('click', prevCard);
