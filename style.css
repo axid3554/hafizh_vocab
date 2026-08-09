@@ -1325,6 +1325,11 @@ body {
     font-size: 0.8rem;
   }
 
+  .modal__table th:first-child,
+  .modal__table td:first-child {
+    display: none;
+  }
+
   .flashcard-section {
     display: grid;
     grid-template-areas:
