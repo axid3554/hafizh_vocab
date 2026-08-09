@@ -42,8 +42,9 @@
     navTentang: $('navTentang'),
     // Modal
     tentangModal: $('tentangModal'),
+    totalKosakataCount: $('totalKosakataCount'),
+    closeTentangBtn: $('closeTentangBtn'),
     tentangBackdrop: $('tentangBackdrop'),
-    tentangClose: $('tentangClose'),
     tentangClose: $('tentangClose'),
     // Sections
     flashcardSection: $('flashcardSection'),
@@ -115,6 +116,10 @@
 
       state.filteredData = [...state.allData];
       state.currentIndex = 0;
+
+      if (dom.totalKosakataCount) {
+        dom.totalKosakataCount.textContent = state.allData.length;
+      }
 
       dom.loadingState.classList.add('hidden');
       dom.mainContent.classList.remove('hidden');
@@ -320,10 +325,17 @@
         dom.cardAyatArtiEn.classList.add('hidden');
       }
 
-      dom.cardAyatRef.textContent =
-        item.nama_surat && item.nomor_ayat
-          ? `(${item.nama_surat} : ${item.nomor_ayat})`
-          : '';
+      let ayatRefText = '';
+      if (item.nama_surat && item.nomor_ayat) {
+        let ayatClean = item.nomor_ayat.replace(/^'/, '');
+        let parts = ayatClean.split(':');
+        if (parts.length === 2) {
+          ayatRefText = `QS. ${item.nama_surat} (${parts[0]}) : ${parts[1]}`;
+        } else {
+          ayatRefText = `QS. ${item.nama_surat} : ${ayatClean}`;
+        }
+      }
+      dom.cardAyatRef.textContent = ayatRefText;
     } else {
       dom.cardAyatRow.style.display = 'none';
     }

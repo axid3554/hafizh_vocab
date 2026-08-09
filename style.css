@@ -30,7 +30,7 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-xl: 28px;
-  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Inter', 'Amiri', system-ui, -apple-system, sans-serif;
   --font-arab: 'Amiri', serif;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
