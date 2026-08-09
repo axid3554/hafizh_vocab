@@ -22,7 +22,9 @@
     quizMode: false,
     // Touch
     touchStartX: 0,
+    touchStartY: 0,
     touchEndX: 0,
+    touchEndY: 0,
     quizTotal: 25,
   };
 
@@ -683,20 +685,26 @@
   // ==================== TOUCH SWIPE ====================
   function handleTouchStart(e) {
     state.touchStartX = e.changedTouches[0].screenX;
+    state.touchStartY = e.changedTouches[0].screenY;
   }
 
   function handleTouchEnd(e) {
     state.touchEndX = e.changedTouches[0].screenX;
+    state.touchEndY = e.changedTouches[0].screenY;
     handleSwipe();
   }
 
   function handleSwipe() {
-    const diff = state.touchStartX - state.touchEndX;
-    const threshold = 50;
+    const diffX = state.touchStartX - state.touchEndX;
+    const diffY = state.touchStartY - state.touchEndY;
+    const thresholdX = 50;
 
-    if (Math.abs(diff) < threshold) return;
+    // Abaikan swipe jika pergerakan vertikal lebih besar dari horizontal (berarti sedang scroll)
+    if (Math.abs(diffY) > Math.abs(diffX)) return;
 
-    if (diff > 0) {
+    if (Math.abs(diffX) < thresholdX) return;
+
+    if (diffX > 0) {
       // Swipe left → next
       nextCard();
     } else {
